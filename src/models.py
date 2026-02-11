@@ -97,3 +97,4 @@ class MeetingState(TypedDict):
 
     # Metadata
     processing_step: str
+    trace_url: str  # LangSmith trace URL for observability

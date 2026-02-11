@@ -134,9 +134,20 @@ def display_results(state: dict) -> None:
             )
         )
 
-    # LangSmith trace URL hint
+    # LangSmith trace URL
+    trace_url = state.get("trace_url", "")
     console.print()
-    console.print(
-        "[dim]View trace in LangSmith: https://smith.langchain.com/projects[/dim]"
-    )
+    if trace_url:
+        console.print(
+            Panel(
+                f"[link={trace_url}]{trace_url}[/link]",
+                title="[bold magenta]LangSmith Trace[/bold magenta]",
+                border_style="magenta",
+                expand=False,
+            )
+        )
+    else:
+        console.print(
+            "[dim]View traces in LangSmith: https://smith.langchain.com/projects[/dim]"
+        )
     console.print()

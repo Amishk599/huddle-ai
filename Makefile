@@ -18,7 +18,13 @@ test:
 	pytest tests/ -v
 
 eval:
-	python3 evals/run_evals.py
+	python3 -m evals.run_evals
+
+eval-meeting:
+	python3 -m evals.run_evals --meeting
+
+eval-assistant:
+	python3 -m evals.run_evals --assistant
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

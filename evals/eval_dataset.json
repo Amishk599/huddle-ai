@@ -2,80 +2,88 @@
   "meeting_processing": [
     {
       "id": "eval_001",
-      "input": "Alice should draft the PRD by Friday.",
+      "description": "Single action item with explicit assignee and deadline",
+      "input": "Meeting: Weekly Sync\nDate: February 10, 2026\nDuration: 15 minutes\nAttendees: Alice Chen (PM), Bob Martinez (Design Lead)\n\nAlice: We need the PRD drafted for the mobile redesign. I'll handle it and have it ready by Friday.\n\nBob: Sounds good, I'll review it once it's done.",
       "expected_action_items": 1,
       "expected_assignee": "Alice Chen",
       "expected_deadline": "Friday"
     },
     {
       "id": "eval_002",
-      "input": "Bob will update the design system. David needs to review the frontend code.",
+      "description": "Two action items with different assignees",
+      "input": "Meeting: Design & Frontend Sync\nDate: February 9, 2026\nDuration: 30 minutes\nAttendees: Bob Martinez (Design Lead), David Kim (Senior Frontend Engineer)\n\nBob: I'll update the design system tokens by end of week.\n\nDavid: And I need to review the frontend component library code for accessibility issues. I'll get that done by Wednesday.",
       "expected_action_items": 2,
       "expected_assignees": ["Bob Martinez", "David Kim"]
     },
     {
       "id": "eval_003",
-      "input": "We had a great discussion about the product roadmap. Everyone agrees we're on track.",
+      "description": "No action items - pure status update",
+      "input": "Meeting: Quarterly Sync\nDate: February 8, 2026\nDuration: 20 minutes\nAttendees: Frank Wu (Eng Manager), Alice Chen (PM)\n\nFrank: Everything is on track with the current sprint. No blockers.\n\nAlice: Great. The product roadmap looks solid. Everyone agrees we're making good progress.\n\nFrank: Agreed. Let's keep the momentum going.",
       "expected_action_items": 0
     },
     {
       "id": "eval_004",
-      "input": "Elena will optimize the database queries by next Wednesday. Grace should prepare the test plan by Monday.",
+      "description": "Two backend-focused action items with deadlines",
+      "input": "Meeting: Backend Planning\nDate: February 7, 2026\nDuration: 25 minutes\nAttendees: Elena Rodriguez (Senior Backend Engineer), Grace Thompson (QA Lead)\n\nElena: I'll optimize the database queries for the dashboard. Should have results by next Wednesday.\n\nGrace: I need to prepare the test plan for the new API endpoints. I'll have it ready by Monday.\n\nElena: Perfect, that lines up well with our sprint timeline.",
       "expected_action_items": 2,
       "expected_assignees": ["Elena Rodriguez", "Grace Thompson"]
     },
     {
       "id": "eval_005",
-      "input": "Frank needs to hire two backend engineers by end of Q1.",
+      "description": "Single action item for engineering manager",
+      "input": "Meeting: Hiring Discussion\nDate: February 6, 2026\nDuration: 20 minutes\nAttendees: Frank Wu (Eng Manager), Todd (VP Engineering)\n\nTodd: We're short-staffed on the backend team. Frank, can you draft job descriptions for two backend engineer positions?\n\nFrank: Absolutely. I'll have them ready by end of Q1.\n\nTodd: Great, let's get sourcing started ASAP.",
       "expected_action_items": 1,
       "expected_assignee": "Frank Wu"
     },
     {
       "id": "eval_006",
-      "input": "Carol will prepare the marketing materials. The team discussed competitive analysis.",
+      "description": "Marketing action item with discussion context",
+      "input": "Meeting: Marketing Sync\nDate: February 5, 2026\nDuration: 30 minutes\nAttendees: Carol Johnson (Product Marketing Manager), Alice Chen (PM)\n\nAlice: The Q4 launch is coming up. We need the marketing materials finalized.\n\nCarol: I'll prepare the go-to-market materials and competitive analysis deck. Should have a first draft by next Friday.\n\nAlice: Also, the team discussed competitive positioning but no specific next steps there yet.",
       "expected_action_items": 1,
       "expected_assignee": "Carol Johnson"
     },
     {
       "id": "eval_007",
-      "input": "URGENT: Production is down. Elena fix the payment service NOW. David check frontend errors.",
+      "description": "Urgent production incident with high-priority items",
+      "input": "Meeting: URGENT Incident Response\nDate: February 10, 2026\nDuration: 10 minutes\nAttendees: Elena Rodriguez (Backend), David Kim (Frontend), Frank Wu (Eng Manager)\n\nFrank: Production is down. We need all hands on deck NOW.\n\nElena: I see the payment service is throwing 500 errors. I'll investigate and fix the backend immediately.\n\nDavid: The frontend is showing error screens too. I'll check the frontend error handling and deploy a fix.\n\nFrank: This is top priority. Drop everything else.",
       "expected_action_items": 2,
-      "expected_priority": "high"
+      "expected_priority": "HIGH"
     },
     {
       "id": "eval_008",
-      "input": "Meeting with no action items - just a status update. Everything is going well.",
+      "description": "Another no-action-items meeting",
+      "input": "Meeting: Team Retrospective\nDate: February 4, 2026\nDuration: 45 minutes\nAttendees: Frank Wu (Eng Manager), Elena Rodriguez, David Kim, Grace Thompson\n\nFrank: This is our sprint retro. How did everyone feel about the last two weeks?\n\nElena: The backend work went smoothly. No complaints.\n\nDavid: Same here. Good collaboration on the component library.\n\nGrace: QA coverage improved this sprint. Happy with the progress.\n\nFrank: Great to hear. Let's keep it up. No changes needed to our process.",
       "expected_action_items": 0
     }
   ],
   "assistant_queries": [
     {
       "id": "assist_001",
-      "query": "Who has Python expertise?",
-      "expected_source": "team_rag",
+      "query": "Who has Python expertise on the team?",
+      "expected_source": "team",
       "expected_mentions": ["Elena Rodriguez"]
     },
     {
       "id": "assist_002",
-      "query": "What was discussed in the meeting with Todd?",
-      "expected_source": "meeting_rag",
+      "query": "What was discussed in the meeting with Todd about infrastructure?",
+      "expected_source": "meeting",
       "expected_topics": ["database migration", "hiring"]
     },
     {
       "id": "assist_003",
-      "query": "What is LangGraph?",
-      "expected_source": "direct_llm"
+      "query": "What is LangGraph and how does it work?",
+      "expected_source": "general"
     },
     {
       "id": "assist_004",
-      "query": "Who is the QA Lead?",
-      "expected_source": "team_rag",
+      "query": "Who is the QA Lead on the team?",
+      "expected_source": "team",
       "expected_mentions": ["Grace Thompson"]
     },
     {
       "id": "assist_005",
-      "query": "What design work is being done?",
-      "expected_source": "meeting_rag",
+      "query": "What design work was discussed in recent meetings?",
+      "expected_source": "meeting",
       "expected_topics": ["component library", "design system"]
     }
   ]

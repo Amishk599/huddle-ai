@@ -2,9 +2,11 @@
 
 import json
 import re
+import uuid
 from collections.abc import Generator
 from datetime import date
 
+import langsmith as ls
 from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 
@@ -295,36 +297,143 @@ def _initial_state(transcript: str, source: str) -> dict:
         "emails_sent": [],
         "errors": [],
         "processing_step": "",
+        "trace_url": "",
     }
 
 
-def process_transcript(transcript: str, source: str = "sample") -> dict:
+def _build_run_config(source: str, run_id: uuid.UUID | None = None) -> dict:
+    """Build a LangGraph config with LangSmith metadata and tags.
+
+    Args:
+        source: Transcript source type ("sample", "pasted", "eval").
+        run_id: Optional pre-generated run ID for trace URL construction.
+
+    Returns:
+        Config dict with tags, metadata, and optional run_id.
+    """
+    config: dict = {
+        "tags": ["meeting-processing", f"source:{source}"],
+        "metadata": {
+            "app": "huddle-ai",
+            "transcript_source": source,
+            "langsmith_project": settings.LANGCHAIN_PROJECT,
+        },
+        "run_name": "Huddle AI - Process Transcript",
+    }
+    if run_id:
+        config["run_id"] = str(run_id)
+    return config
+
+
+def _get_trace_url(run_id: uuid.UUID, share: bool = False) -> str:
+    """Construct a LangSmith trace URL for a given run ID.
+
+    Args:
+        run_id: The run ID to look up.
+        share: If True, create a public share link that anyone can access
+               (even without a LangSmith account). Defaults to False
+               (returns a private workspace URL).
+
+    Returns:
+        A LangSmith trace URL (public if ``share=True``, private otherwise).
+    """
+    try:
+        client = ls.Client()
+
+        if share:
+            # share_run() returns a public URL accessible by anyone
+            public_url = client.share_run(run_id)
+            if public_url:
+                return str(public_url)
+
+        run = client.read_run(run_id)
+        if run.url:
+            return run.url
+    except Exception:
+        pass
+
+    # Fallback: link to the project page
+    project = settings.LANGCHAIN_PROJECT
+    return f"https://smith.langchain.com/o/-/projects/p/{project}?runtab&selectedRunId={run_id}"
+
+
+def share_trace(run_id: str | uuid.UUID) -> str:
+    """Make an existing trace publicly accessible and return the share URL.
+
+    Args:
+        run_id: The run ID (string or UUID) of the trace to share.
+
+    Returns:
+        The public share URL.
+
+    Raises:
+        RuntimeError: If sharing fails.
+    """
+    try:
+        client = ls.Client()
+        public_url = client.share_run(run_id)
+        return str(public_url)
+    except Exception as exc:
+        raise RuntimeError(f"Failed to share trace {run_id}: {exc}") from exc
+
+
+def process_transcript(
+    transcript: str, source: str = "sample", *, share: bool = False
+) -> dict:
     """Process a meeting transcript through the full pipeline.
 
     Args:
         transcript: The meeting transcript text.
-        source: Source type ("sample" or "pasted").
+        source: Source type ("sample", "pasted", "eval", "demo").
+        share: If True, the resulting LangSmith trace will be made publicly
+               accessible (anyone with the link can view it).
 
     Returns:
-        Final state dict with summary, action_items, emails_sent, etc.
+        Final state dict with summary, action_items, emails_sent, trace_url, etc.
     """
+    run_id = uuid.uuid4()
+    config = _build_run_config(source, run_id=run_id)
     graph = build_graph()
-    return graph.invoke(_initial_state(transcript, source))
+    result = graph.invoke(_initial_state(transcript, source), config=config)
+
+    # Attach trace URL (public if share=True)
+    try:
+        result["trace_url"] = _get_trace_url(run_id, share=share)
+    except Exception:
+        result["trace_url"] = ""
+
+    return result
 
 
 def process_transcript_stream(
-    transcript: str, source: str = "sample"
+    transcript: str, source: str = "sample", *, share: bool = False
 ) -> Generator[tuple[str, dict], None, None]:
     """Process a transcript, yielding (node_name, state_update) after each step.
 
     Use this for real-time progress display.
+    The final yielded event will include a ``trace_url`` key.
+
+    Args:
+        transcript: The meeting transcript text.
+        source: Source type ("sample" or "pasted").
+        share: If True, the trace will be made publicly accessible.
     """
+    run_id = uuid.uuid4()
+    config = _build_run_config(source, run_id=run_id)
     graph = build_graph()
+
     for event in graph.stream(
-        _initial_state(transcript, source), stream_mode="updates"
+        _initial_state(transcript, source), config=config, stream_mode="updates"
     ):
         for node_name, state_update in event.items():
             yield node_name, state_update
+
+    # After stream completes, yield trace URL as a metadata event
+    try:
+        trace_url = _get_trace_url(run_id, share=share)
+    except Exception:
+        trace_url = ""
+    yield "__trace__", {"trace_url": trace_url}
 
 
 # --- Helpers ---

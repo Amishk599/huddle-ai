@@ -76,6 +76,10 @@ def run_with_progress(transcript: str, source: str = "sample") -> dict:
                 else:
                     final_state[k] = v
 
+            # Skip the internal trace metadata event in progress display
+            if node_name == "__trace__":
+                continue
+
             # Mark this node as completed
             completed.append(node_name)
             if node_name in remaining:
