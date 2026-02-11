@@ -6,7 +6,7 @@ langgraph>=0.0.20
 langsmith>=0.0.80
 
 # Vector Store
-chromadb>=0.4.22
+faiss-cpu>=1.7.0
 
 # Data Models
 pydantic>=2.5.0
