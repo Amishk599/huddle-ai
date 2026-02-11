@@ -1,9 +1,12 @@
 """Chat interface for the RAG-powered assistant."""
 
+from collections.abc import Generator
+
 from langchain_core.messages import AIMessage, HumanMessage
 from prompt_toolkit import prompt as pt_prompt
 from prompt_toolkit.formatted_text import HTML
 from rich.console import Console
+from rich.live import Live
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.text import Text
@@ -44,25 +47,43 @@ def _show_assistant_banner() -> None:
     console.print("[dim]  Type /help for commands, /exit to return to menu.[/dim]\n")
 
 
-def _display_answer(answer: str, source: str) -> None:
-    """Display the assistant's response with source label."""
+def _make_answer_panel(text: str, source: str) -> Panel:
+    """Build a Panel rendering the current answer text."""
     color = SOURCE_STYLES.get(source, "white")
-    source_tag = f"[{color}]{source}[/{color}]"
-
-    console.print()
-    console.print(
-        Panel(
-            Markdown(answer),
-            title=f"[bold]Assistant[/bold]  [{color}]({source})[/{color}]",
-            border_style=color,
-            padding=(1, 2),
-        )
+    return Panel(
+        Markdown(text),
+        title=f"[bold]Assistant[/bold]  [{color}]({source})[/{color}]",
+        border_style=color,
+        padding=(1, 2),
     )
+
+
+def _stream_answer(source: str, tokens: Generator[str, None, None]) -> str:
+    """Stream tokens into a live-updating Rich Panel.
+
+    Returns:
+        The fully accumulated answer text.
+    """
+    accumulated = ""
+    console.print()
+    with Live(
+        _make_answer_panel("...", source),
+        console=console,
+        refresh_per_second=12,
+        transient=True,
+    ) as live:
+        for token in tokens:
+            accumulated += token
+            live.update(_make_answer_panel(accumulated, source))
+
+    # Print the final panel so it stays on screen after Live exits
+    console.print(_make_answer_panel(accumulated, source))
+    return accumulated
 
 
 def run_assistant() -> None:
     """Run the interactive assistant chat loop."""
-    from src.assistant.chain import ask
+    from src.assistant.chain import ask_stream
 
     _show_assistant_banner()
 
@@ -91,15 +112,14 @@ def run_assistant() -> None:
             console.print("[dim]Conversation history cleared.[/dim]\n")
             continue
 
-        # Ask the assistant
+        # Ask the assistant (streaming)
         try:
-            answer, source = ask(user_input, history)
+            source, tokens = ask_stream(user_input, history)
+            answer = _stream_answer(source, tokens)
 
             # Update conversation history
             history.append(HumanMessage(content=user_input))
             history.append(AIMessage(content=answer))
-
-            _display_answer(answer, source)
             console.print()
         except Exception as e:
             console.print(f"\n[red]Error: {e}[/red]\n")

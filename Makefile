@@ -12,7 +12,7 @@ init-stores:
 	python3 scripts/setup_vector_stores.py
 
 run:
-	python3 src/main.py
+	python3 -m src.main
 
 test:
 	pytest tests/ -v

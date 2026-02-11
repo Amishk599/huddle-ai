@@ -1,5 +1,7 @@
 """RAG-powered assistant chain with question routing."""
 
+from collections.abc import Generator
+
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
@@ -111,82 +113,71 @@ def classify_query(
     return result.category
 
 
-def answer_team_query(
+def _build_team_chain_inputs(
     question: str,
     history: list[HumanMessage | AIMessage] | None = None,
-) -> tuple[str, str]:
-    """Answer a team-related question using RAG.
-
-    Returns:
-        Tuple of (answer, source_label).
-    """
+) -> tuple[dict, str]:
+    """Prepare inputs for a team RAG query."""
     docs = search_team(question, k=3)
     context = "\n\n".join(
         f"[{doc.metadata.get('name', 'Unknown')} - {doc.metadata.get('role', '')}]\n"
         f"{doc.page_content}"
         for doc in docs
     )
-
-    llm = _get_llm()
-    chain = TEAM_RAG_PROMPT | llm
-    result = chain.invoke({
+    return {
         "question": question,
         "context": context,
         "history": history or [],
-    })
-    return result.content, "Team Directory"
+    }, "Team Directory"
 
 
-def answer_meeting_query(
+def _build_meeting_chain_inputs(
     question: str,
     history: list[HumanMessage | AIMessage] | None = None,
-) -> tuple[str, str]:
-    """Answer a meeting-related question using RAG.
-
-    Returns:
-        Tuple of (answer, source_label).
-    """
+) -> tuple[dict, str]:
+    """Prepare inputs for a meeting RAG query."""
     docs = search_meetings(question, k=3)
     context = "\n\n".join(
         f"[{doc.metadata.get('meeting', 'Unknown Meeting')} - "
         f"{doc.metadata.get('date', '')}]\n{doc.page_content}"
         for doc in docs
     )
-
-    llm = _get_llm()
-    chain = MEETING_RAG_PROMPT | llm
-    result = chain.invoke({
+    return {
         "question": question,
         "context": context,
         "history": history or [],
-    })
-    return result.content, "Meeting History"
+    }, "Meeting History"
 
 
-def answer_general_query(
+def _build_general_chain_inputs(
     question: str,
     history: list[HumanMessage | AIMessage] | None = None,
-) -> tuple[str, str]:
-    """Answer a general question directly with the LLM.
-
-    Returns:
-        Tuple of (answer, source_label).
-    """
-    llm = _get_llm()
-    chain = GENERAL_PROMPT | llm
-    result = chain.invoke({
+) -> tuple[dict, str]:
+    """Prepare inputs for a general knowledge query."""
+    return {
         "question": question,
         "history": history or [],
-    })
-    return result.content, "General Knowledge"
+    }, "General Knowledge"
 
 
-# Route table
-_ROUTE_HANDLERS = {
-    "team": answer_team_query,
-    "meeting": answer_meeting_query,
-    "general": answer_general_query,
+_CATEGORY_CONFIG: dict[str, tuple] = {
+    "team": (TEAM_RAG_PROMPT, _build_team_chain_inputs),
+    "meeting": (MEETING_RAG_PROMPT, _build_meeting_chain_inputs),
+    "general": (GENERAL_PROMPT, _build_general_chain_inputs),
 }
+
+
+def _resolve_category(
+    question: str,
+    history: list[HumanMessage | AIMessage] | None,
+) -> tuple[ChatPromptTemplate, dict, str]:
+    """Classify the question and return (prompt, chain_inputs, source_label)."""
+    category = classify_query(question, history)
+    prompt, builder = _CATEGORY_CONFIG.get(
+        category, (GENERAL_PROMPT, _build_general_chain_inputs)
+    )
+    inputs, source = builder(question, history)
+    return prompt, inputs, source
 
 
 def ask(
@@ -202,6 +193,35 @@ def ask(
     Returns:
         Tuple of (answer_text, source_label).
     """
-    category = classify_query(question, history)
-    handler = _ROUTE_HANDLERS.get(category, answer_general_query)
-    return handler(question, history)
+    prompt, inputs, source = _resolve_category(question, history)
+    chain = prompt | _get_llm()
+    result = chain.invoke(inputs)
+    return result.content, source
+
+
+def ask_stream(
+    question: str,
+    history: list[HumanMessage | AIMessage] | None = None,
+) -> tuple[str, Generator[str, None, None]]:
+    """Classify a question and stream the response token-by-token.
+
+    Classification is blocking (fast structured output call).
+    The answer is streamed.
+
+    Args:
+        question: The user's question.
+        history: Conversation history (list of HumanMessage/AIMessage).
+
+    Returns:
+        Tuple of (source_label, token_generator).
+        The generator yields content strings for each chunk.
+    """
+    prompt, inputs, source = _resolve_category(question, history)
+    chain = prompt | _get_llm()
+
+    def _token_generator() -> Generator[str, None, None]:
+        for chunk in chain.stream(inputs):
+            if chunk.content:
+                yield chunk.content
+
+    return source, _token_generator()
