@@ -1,0 +1,38 @@
+Meeting: Q1 Business Review
+Date: February 4, 2026
+Duration: 90 minutes
+Attendees: John (CEO), Sarah Lin (VP Product), Mike Thompson (VP Marketing), Carol Johnson (PMM), Alice Chen (PM)
+
+John: Let's start with the numbers. Mike, how did the Q4 launch perform?
+
+Mike: Overall positive. We hit 85% of our MQL target. The enterprise segment exceeded expectations by 20%, but SMB underperformed.
+
+Carol: The SMB messaging didn't resonate as well as we hoped. I think we need to refine our value proposition for that segment.
+
+John: What's the plan to address that?
+
+Carol: I'd like to run some customer interviews and refine our messaging. I can have a revised messaging framework ready by end of February.
+
+Sarah: That aligns with our product roadmap. We're prioritizing SMB-specific features in Q2.
+
+John: Good. Carol, schedule those customer interviews this week. I want to see preliminary findings by February 14th.
+
+Carol: I'll reach out to our SMB customers today and have interviews scheduled by Friday.
+
+Alice: From my side, the mobile app redesign is on track. We're finalizing the PRD this week and starting design next Monday.
+
+John: Excellent. Sarah, can you ensure we have proper analytics in place to measure the new app's performance?
+
+Sarah: Absolutely. I'll work with the data team to set up tracking. We should have the analytics framework documented by February 18th.
+
+Mike: One thing - we need updated sales collateral for Q2. Carol, can you prioritize that after the messaging work?
+
+Carol: Noted. I'll have new sales decks ready by March 1st.
+
+John: Last item - we're presenting to the board in 3 weeks. Sarah, can you prepare the product update slides? And Mike, the marketing metrics slides?
+
+Sarah: I'll have them ready by February 21st.
+
+Mike: Same timeline for marketing slides.
+
+John: Perfect. Let's reconvene next week to review progress. Good meeting everyone.

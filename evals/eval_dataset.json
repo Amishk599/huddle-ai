@@ -1,0 +1,82 @@
+{
+  "meeting_processing": [
+    {
+      "id": "eval_001",
+      "input": "Alice should draft the PRD by Friday.",
+      "expected_action_items": 1,
+      "expected_assignee": "Alice Chen",
+      "expected_deadline": "Friday"
+    },
+    {
+      "id": "eval_002",
+      "input": "Bob will update the design system. David needs to review the frontend code.",
+      "expected_action_items": 2,
+      "expected_assignees": ["Bob Martinez", "David Kim"]
+    },
+    {
+      "id": "eval_003",
+      "input": "We had a great discussion about the product roadmap. Everyone agrees we're on track.",
+      "expected_action_items": 0
+    },
+    {
+      "id": "eval_004",
+      "input": "Elena will optimize the database queries by next Wednesday. Grace should prepare the test plan by Monday.",
+      "expected_action_items": 2,
+      "expected_assignees": ["Elena Rodriguez", "Grace Thompson"]
+    },
+    {
+      "id": "eval_005",
+      "input": "Frank needs to hire two backend engineers by end of Q1.",
+      "expected_action_items": 1,
+      "expected_assignee": "Frank Wu"
+    },
+    {
+      "id": "eval_006",
+      "input": "Carol will prepare the marketing materials. The team discussed competitive analysis.",
+      "expected_action_items": 1,
+      "expected_assignee": "Carol Johnson"
+    },
+    {
+      "id": "eval_007",
+      "input": "URGENT: Production is down. Elena fix the payment service NOW. David check frontend errors.",
+      "expected_action_items": 2,
+      "expected_priority": "high"
+    },
+    {
+      "id": "eval_008",
+      "input": "Meeting with no action items - just a status update. Everything is going well.",
+      "expected_action_items": 0
+    }
+  ],
+  "assistant_queries": [
+    {
+      "id": "assist_001",
+      "query": "Who has Python expertise?",
+      "expected_source": "team_rag",
+      "expected_mentions": ["Elena Rodriguez"]
+    },
+    {
+      "id": "assist_002",
+      "query": "What was discussed in the meeting with Todd?",
+      "expected_source": "meeting_rag",
+      "expected_topics": ["database migration", "hiring"]
+    },
+    {
+      "id": "assist_003",
+      "query": "What is LangGraph?",
+      "expected_source": "direct_llm"
+    },
+    {
+      "id": "assist_004",
+      "query": "Who is the QA Lead?",
+      "expected_source": "team_rag",
+      "expected_mentions": ["Grace Thompson"]
+    },
+    {
+      "id": "assist_005",
+      "query": "What design work is being done?",
+      "expected_source": "meeting_rag",
+      "expected_topics": ["component library", "design system"]
+    }
+  ]
+}

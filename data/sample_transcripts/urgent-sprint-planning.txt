@@ -1,0 +1,30 @@
+Meeting: Emergency Sprint Planning
+Date: February 6, 2026
+Duration: 30 minutes
+Attendees: Frank Wu (Eng Manager), Elena Rodriguez (Backend), David Kim (Frontend), Grace Thompson (QA Lead)
+
+Frank: Thanks for the quick turnaround everyone. We have a critical bug in production that's affecting 15% of our users. The checkout flow is failing intermittently.
+
+Elena: I've done initial analysis. It looks like a race condition in the payment processing service. I can have a fix ready by end of day today.
+
+Frank: That's priority one. David, is there anything on the frontend that could be contributing?
+
+David: Let me check. I noticed some async state management issues last week. I'll audit the checkout component and have findings by 3 PM today.
+
+Grace: I'll set up a test environment to reproduce the issue. Should have a reliable reproduction case within the hour.
+
+Frank: Perfect. Grace, once Elena has the fix, I need a full regression test before we deploy. Can you have that done tonight?
+
+Grace: Yes, I'll clear my schedule. Full regression should take about 4 hours once I have the fix.
+
+Elena: I'll also add better error logging so we can catch these issues earlier. That logging improvement will be part of tomorrow's sprint.
+
+Frank: Good thinking. David, can you also add frontend error tracking for the checkout flow?
+
+David: Absolutely. I'll implement Sentry integration for the checkout component by tomorrow noon.
+
+Frank: Let's have a quick sync at 5 PM today to check status. If Elena's fix is ready, we'll deploy to staging tonight and production first thing tomorrow morning.
+
+Grace: I'll make sure the QA team is on standby for the production deployment verification.
+
+Frank: Thanks everyone. Let's knock this out. Any blockers, ping me immediately.

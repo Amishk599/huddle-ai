@@ -1,0 +1,65 @@
+[
+  {
+    "id": "tm001",
+    "name": "Alice Chen",
+    "email": "alice.chen@company.com",
+    "role": "Product Manager",
+    "expertise": ["product strategy", "roadmap planning", "user research", "PRD writing"],
+    "current_projects": ["Mobile App Redesign", "Q4 Planning"],
+    "reports_to": "Sarah Lin (VP Product)"
+  },
+  {
+    "id": "tm002",
+    "name": "Bob Martinez",
+    "email": "bob.martinez@company.com",
+    "role": "Design Lead",
+    "expertise": ["UI/UX design", "design systems", "user testing", "frontend development"],
+    "current_projects": ["Component Library", "Mobile App Design"],
+    "reports_to": "Sarah Lin (VP Product)"
+  },
+  {
+    "id": "tm003",
+    "name": "Carol Johnson",
+    "email": "carol.johnson@company.com",
+    "role": "Product Marketing Manager",
+    "expertise": ["go-to-market strategy", "messaging", "competitive analysis", "stakeholder communication"],
+    "current_projects": ["Q4 Launch Campaign", "Sales Enablement"],
+    "reports_to": "Mike Thompson (VP Marketing)"
+  },
+  {
+    "id": "tm004",
+    "name": "David Kim",
+    "email": "david.kim@company.com",
+    "role": "Senior Engineer (Frontend)",
+    "expertise": ["React", "TypeScript", "frontend architecture", "performance optimization"],
+    "current_projects": ["Component Library", "Mobile Web App"],
+    "reports_to": "Frank Wu (Engineering Manager)"
+  },
+  {
+    "id": "tm005",
+    "name": "Elena Rodriguez",
+    "email": "elena.rodriguez@company.com",
+    "role": "Senior Engineer (Backend)",
+    "expertise": ["Python", "Django", "API design", "database optimization", "microservices"],
+    "current_projects": ["API Gateway", "Database Migration"],
+    "reports_to": "Frank Wu (Engineering Manager)"
+  },
+  {
+    "id": "tm006",
+    "name": "Frank Wu",
+    "email": "frank.wu@company.com",
+    "role": "Engineering Manager",
+    "expertise": ["team leadership", "system architecture", "hiring", "sprint planning"],
+    "current_projects": ["Team Scaling", "Technical Roadmap"],
+    "reports_to": "CTO"
+  },
+  {
+    "id": "tm007",
+    "name": "Grace Thompson",
+    "email": "grace.thompson@company.com",
+    "role": "QA Lead",
+    "expertise": ["test automation", "QA strategy", "CI/CD", "release management"],
+    "current_projects": ["Automated Testing Framework", "Release Process"],
+    "reports_to": "Frank Wu (Engineering Manager)"
+  }
+]

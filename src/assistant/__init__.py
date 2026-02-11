@@ -1,0 +1,1 @@
+"""RAG-powered assistant module."""

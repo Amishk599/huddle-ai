@@ -1,0 +1,30 @@
+Meeting: Backend Infrastructure Planning
+Date: February 5, 2026
+Duration: 45 minutes
+Attendees: Todd (VP Engineering), Alice Chen (PM), Frank Wu (Eng Manager), Elena Rodriguez (Senior Engineer)
+
+Todd: Thanks everyone for joining. Let's dive into the database migration timeline. Where are we currently?
+
+Elena: We've completed the schema design for the new PostgreSQL setup. However, I'm seeing some performance concerns with the proposed sharding strategy. I think we need to run more load tests before committing.
+
+Todd: Good catch. How long would thorough testing take?
+
+Elena: I'd estimate 2 weeks to run comprehensive load tests and analyze the results. We should also bring in David to review the API layer changes.
+
+Alice: From a product perspective, we're okay with pushing this to Q2. The mobile app redesign is higher priority right now anyway.
+
+Todd: Agreed. Let's officially move the migration to Q2. Elena, can you finalize the database schema by next Friday? That gives us a clean handoff to Q2.
+
+Elena: Absolutely. I'll have the final schema document ready by February 12th.
+
+Frank: While we're on infrastructure, we should talk about hiring. We're down 2 backend engineers and it's impacting velocity.
+
+Todd: You're right. Sarah from HR mentioned she's ready to start sourcing. Frank, can you work with her to draft the job descriptions by end of this week?
+
+Frank: Will do. I'll get those to her by Friday.
+
+Alice: One more thing - I've been hearing complaints about API response times on the dashboard. Elena, can you look into performance optimizations?
+
+Elena: Sure, I'll add it to my sprint. Should have an analysis done by next week.
+
+Todd: Perfect. Let's reconvene in 2 weeks to check on progress. Thanks all!
