@@ -25,10 +25,10 @@ def _handle_process() -> None:
 
 
 def _handle_assistant() -> None:
-    """Placeholder for assistant mode (Phase 3)."""
-    console.print(
-        "\n[yellow]Assistant mode is not yet implemented (coming in Phase 3).[/yellow]\n"
-    )
+    """Launch the RAG-powered assistant chat interface."""
+    from src.ui.assistant import run_assistant
+
+    run_assistant()
 
 
 def main() -> None:
