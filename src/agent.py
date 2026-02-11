@@ -2,6 +2,7 @@
 
 import json
 import re
+from collections.abc import Generator
 from datetime import date
 
 from langchain_openai import ChatOpenAI
@@ -264,6 +265,39 @@ def build_graph():
     return graph.compile()
 
 
+PROCESSING_STEPS = [
+    "intake",
+    "summarize",
+    "extract_action_items",
+    "assign_owners",
+    "determine_deadlines",
+    "send_emails",
+]
+
+STEP_LABELS = {
+    "intake": "Validating transcript",
+    "summarize": "Generating summary",
+    "extract_action_items": "Extracting action items",
+    "assign_owners": "Assigning owners (RAG)",
+    "determine_deadlines": "Resolving deadlines",
+    "send_emails": "Sending notifications",
+}
+
+
+def _initial_state(transcript: str, source: str) -> dict:
+    return {
+        "transcript": transcript,
+        "transcript_source": source,
+        "summary": "",
+        "key_topics": [],
+        "participants": [],
+        "action_items": [],
+        "emails_sent": [],
+        "errors": [],
+        "processing_step": "",
+    }
+
+
 def process_transcript(transcript: str, source: str = "sample") -> dict:
     """Process a meeting transcript through the full pipeline.
 
@@ -275,18 +309,22 @@ def process_transcript(transcript: str, source: str = "sample") -> dict:
         Final state dict with summary, action_items, emails_sent, etc.
     """
     graph = build_graph()
-    initial_state = {
-        "transcript": transcript,
-        "transcript_source": source,
-        "summary": "",
-        "key_topics": [],
-        "participants": [],
-        "action_items": [],
-        "emails_sent": [],
-        "errors": [],
-        "processing_step": "",
-    }
-    return graph.invoke(initial_state)
+    return graph.invoke(_initial_state(transcript, source))
+
+
+def process_transcript_stream(
+    transcript: str, source: str = "sample"
+) -> Generator[tuple[str, dict], None, None]:
+    """Process a transcript, yielding (node_name, state_update) after each step.
+
+    Use this for real-time progress display.
+    """
+    graph = build_graph()
+    for event in graph.stream(
+        _initial_state(transcript, source), stream_mode="updates"
+    ):
+        for node_name, state_update in event.items():
+            yield node_name, state_update
 
 
 # --- Helpers ---

@@ -1,90 +1,54 @@
 """Huddle AI - Main entry point."""
 
 import sys
-from pathlib import Path
 
 from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
 
-from src.agent import process_transcript
-from src.config import settings
+from src.ui.menus import show_banner, show_main_menu, show_transcript_menu
+from src.ui.processing import run_with_progress
+from src.ui.results import display_results
 
 console = Console()
 
 
-def main():
-    """Run Huddle AI - process a sample transcript."""
-    console.print(
-        Panel("[bold blue]Huddle AI[/bold blue]\nMeeting Intelligence Agent", expand=False)
-    )
-
-    # Load sample transcript
-    transcript_path = settings.SAMPLE_TRANSCRIPTS_DIR / "meeting-with-todd.txt"
-    if not transcript_path.exists():
-        console.print("[red]Sample transcript not found.[/red]")
+def _handle_process() -> None:
+    """Handle the Process Meeting Transcript flow."""
+    result = show_transcript_menu()
+    if result is None:
         return
 
-    transcript = transcript_path.read_text()
-    console.print(f"\nProcessing: [cyan]{transcript_path.name}[/cyan]")
-    console.print(f"Transcript length: {len(transcript)} chars\n")
+    transcript, label = result
+    console.print(f"Processing: [bold cyan]{label}[/bold cyan]\n")
 
-    # Process
-    console.print("[yellow]Processing transcript...[/yellow]\n")
-    result = process_transcript(transcript, source="sample")
+    state = run_with_progress(transcript, source="sample" if label != "Pasted Transcript" else "pasted")
+    display_results(state)
 
-    # Display results
-    if result.get("errors"):
-        console.print("[red]Errors:[/red]")
-        for error in result["errors"]:
-            console.print(f"  - {error}")
 
-    # Summary
-    console.print(Panel(result.get("summary", "N/A"), title="Meeting Summary"))
+def _handle_assistant() -> None:
+    """Placeholder for assistant mode (Phase 3)."""
+    console.print(
+        "\n[yellow]Assistant mode is not yet implemented (coming in Phase 3).[/yellow]\n"
+    )
 
-    if result.get("key_topics"):
-        console.print("[bold]Key Topics:[/bold]", ", ".join(result["key_topics"]))
 
-    if result.get("participants"):
-        console.print("[bold]Participants:[/bold]", ", ".join(result["participants"]))
+def main() -> None:
+    """Run the Huddle AI main loop."""
+    show_banner()
 
-    # Action items
-    items = result.get("action_items", [])
-    if items:
-        console.print()
-        table = Table(title=f"Action Items ({len(items)})")
-        table.add_column("#", style="dim")
-        table.add_column("Description")
-        table.add_column("Assignee")
-        table.add_column("Priority")
-        table.add_column("Deadline")
-
-        for item in items:
-            priority = item.get("priority", "MEDIUM")
-            priority_color = {"HIGH": "red", "MEDIUM": "yellow", "LOW": "green"}.get(
-                priority, "white"
-            )
-            table.add_row(
-                item.get("id", ""),
-                item.get("description", ""),
-                f"{item.get('assignee', 'N/A')} ({item.get('assignee_email', '')})",
-                f"[{priority_color}]{priority}[/{priority_color}]",
-                item.get("deadline", "N/A"),
-            )
-
-        console.print(table)
-    else:
-        console.print("\n[dim]No action items found.[/dim]")
-
-    # Emails sent
-    emails = result.get("emails_sent", [])
-    if emails:
-        console.print(f"\n[bold]Emails Sent ({len(emails)}):[/bold]")
-        for email in emails:
-            console.print(f"  [green]✓[/green] {email}")
-
-    console.print()
+    while True:
+        choice = show_main_menu()
+        if choice is None:
+            console.print("\n[dim]Goodbye![/dim]\n")
+            break
+        elif choice == "process":
+            _handle_process()
+        elif choice == "assistant":
+            _handle_assistant()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        console.print("\n[dim]Goodbye![/dim]\n")
+        sys.exit(0)
