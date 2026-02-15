@@ -1,5 +1,8 @@
 """Huddle AI - Main entry point."""
 
+import warnings
+warnings.filterwarnings("ignore", message=".*Pydantic V1.*")
+
 import sys
 
 from rich.console import Console

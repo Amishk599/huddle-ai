@@ -5,6 +5,7 @@ A terminal-based agentic application that processes meeting transcripts and extr
 ## Table of Contents
 
 - [Features](#features)
+- [Demo](#demo)
 - [LangSmith Trace](#langsmith-trace)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
@@ -24,13 +25,18 @@ A terminal-based agentic application that processes meeting transcripts and extr
 - **Interactive Assistant**: RAG-powered chat for team and meeting queries
 - **Full Observability**: LangSmith integration for tracing and evaluation
 
+## Demo
+![Demo](assets/demo.gif)
+
 ## LangSmith Trace
 Peek into traces of one end-to-end transcription by Huddle AI:
 
 https://smith.langchain.com/public/0b975f5a-3c20-400c-a0b3-2c0ebbd2a6c6/r
 ## Architecture
 
-The app has two modes: a **processing pipeline** that turns transcripts into action items, and a **RAG-powered assistant** for ad-hoc questions about your team and past meetings.
+The app has two modes:
+- **processing pipeline** that turns transcripts into action items
+- **RAG-powered assistant** for ad-hoc questions about your team and past meetings.
 
 ```
 Main Menu
@@ -161,11 +167,6 @@ huddle-ai/
    - General topics: "What is LangGraph?"
 
 ## Development
-
-### Run Tests
-```bash
-make test
-```
 
 ### Run Evaluations
 ```bash
