@@ -96,4 +96,3 @@ Using Pydantic models ensures:
 - Slack/Teams webhook notifications
 - PII redaction
 - Multi-language support
-- Streaming LLM output
